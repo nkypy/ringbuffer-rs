@@ -78,5 +78,6 @@ mod tests {
         }
         assert_eq!(ring.empty(), true);
         assert_eq!(ring.full(), false);
+        assert_eq!(ring.read(), None);
     }
 }
