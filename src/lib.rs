@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#![feature(test)]
+
+extern crate test;
+
 #[derive(Debug)]
 pub struct RingBuffer<const N: usize> {
     size: usize,
@@ -55,7 +59,7 @@ impl<const N: usize> RingBuffer<N> {
         }
         let src = self.buffer[self.head];
         self.head = (self.head + 1) % self.size;
-        return Some(src);
+        Some(src)
     }
 }
 
@@ -63,8 +67,10 @@ impl<const N: usize> RingBuffer<N> {
 mod tests {
     use crate::RingBuffer;
 
+    use test::Bencher;
+
     #[test]
-    fn it_works() {
+    fn test_ringbuffer() {
         let mut ring = RingBuffer::<32>::new();
         assert_eq!(ring.empty(), true);
         for i in [1u8; 31] {
@@ -79,5 +85,14 @@ mod tests {
         assert_eq!(ring.empty(), true);
         assert_eq!(ring.full(), false);
         assert_eq!(ring.read(), None);
+    }
+
+    #[bench]
+    fn bench_ringbuffer(b: &mut Bencher) {
+        let mut ring = RingBuffer::<32>::new();
+        b.iter(|| {
+            ring.write(1u8);
+            ring.read();
+        })
     }
 }
